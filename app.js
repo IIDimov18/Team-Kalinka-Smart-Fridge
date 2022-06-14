@@ -1,19 +1,28 @@
-const http = require("http");
+const express = require('express')
+const path = require('path');
 
-const hostname = "127.0.0.1";
-const port = 8000;
+const app = express()
 
-// Create HTTP server
-const server = http.createServer(function(req, res) {
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+const port = 80;
+app.use(express.urlencoded({
+    extended: true
+}))
+const indexRouter = require('./routes/index');
 
-    // Set the response HTTP header with HTTP status and Content type
-    res.writeHead(200, {'Content-Type': 'text/plain'});
 
-    // Send the response body "Hello World"
-    res.end('Hello World\n');
-});
 
-// Prints a log once the server starts listening
-server.listen(port, hostname, function() {
-    console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
 })
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use('/', indexRouter);
+
+app.get('*', function(req, res){
+    res.send('ERROR 404');
+});
+module.exports = app;
